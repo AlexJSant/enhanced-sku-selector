@@ -7,7 +7,9 @@ import classnames from 'classnames'
 import { useProduct } from 'vtex.product-context'
 import { ResponsiveValuesTypes } from 'vtex.responsive-values'
 
-import { stripUrl, isColor, slug } from '../utils'
+import { stripUrl } from '../utils'
+// import { isColor } from '../utils'
+import { slug } from '../utils'
 import styles from '../styles.css'
 import { DisplayVariation } from '../types'
 import { imageUrlForSize, VARIATION_IMG_SIZE } from '../../module/images'
@@ -41,7 +43,7 @@ const findSelectedOption = (selectedItem: string | null) =>
   findIndex(propEq('label', selectedItem))
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {}
+const noop = () => { }
 
 const Variation: FC<Props> = ({
   mode = 'default',
@@ -77,7 +79,9 @@ const Variation: FC<Props> = ({
     },
   } = useProduct()
 
-  const displayImage = isColor(originalName)
+  // const displayImage = isColor(originalName)
+
+  const displayImage = options.some(option => option.image !== undefined)
 
   const shouldCollapse = !showAll && options.length > maxItems
 

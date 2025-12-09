@@ -104,7 +104,13 @@ const findImageForVariationValue = (
     )
   })
 
-  return matchedImage ?? head(item.images)
+  // return matchedImage ?? head(item.images)
+  if (matchedImage) {
+    return matchedImage
+  }
+
+  // No match found - return undefined to render as text/dropdown
+  return undefined
 }
 
 const buildEmptySelectedVariation = (variations: Variations) => {
@@ -153,12 +159,12 @@ function filterColorImages(
       // if it doesn't have a variation image, it wont remove images without a label
       images: hasVariationImage
         ? item.images.filter(image => {
-            if (!image.imageLabel) {
-              return false
-            }
+          if (!image.imageLabel) {
+            return false
+          }
 
-            return imageRegex.test(image.imageLabel)
-          })
+          return imageRegex.test(image.imageLabel)
+        })
         : item.images,
     }
   })
@@ -180,11 +186,12 @@ const useImagesMap = (
 
     const result: ImageMap = {}
 
+    // for (const variationName of variationNames) {
+    //   // Today, only "Color" variation should show image, need to find a more resilient way to tell this, waiting for backend
+    //   if (!isColor(variations[variationName].originalName)) {
+    //     continue
+    //   }
     for (const variationName of variationNames) {
-      // Today, only "Color" variation should show image, need to find a more resilient way to tell this, waiting for backend
-      if (!isColor(variations[variationName].originalName)) {
-        continue
-      }
 
       const imageMap = {} as Record<string, Image | undefined>
       const variationValues = variations[variationName].values
@@ -282,8 +289,8 @@ const getNewSelectedVariations = (
       ...emptyVariations,
       ...(colorVariationName
         ? {
-            [colorVariationName]: parsedSku.variationValues[colorVariationName],
-          }
+          [colorVariationName]: parsedSku.variationValues[colorVariationName],
+        }
         : {}),
     }
   }
@@ -373,13 +380,13 @@ const SKUSelectorContainer: FC<Props> = ({
 
       const newSelectedVariation = !isMainAndImpossible
         ? {
-            ...selectedVariations,
-            [variationName]: isRemoving ? null : variationValue,
-          }
+          ...selectedVariations,
+          [variationName]: isRemoving ? null : variationValue,
+        }
         : {
-            ...buildEmptySelectedVariation(variations),
-            [variationName]: variationValue,
-          }
+          ...buildEmptySelectedVariation(variations),
+          [variationName]: variationValue,
+        }
 
       // Set here for a better response to user
       setSelectedVariations(newSelectedVariation)
@@ -399,10 +406,10 @@ const SKUSelectorContainer: FC<Props> = ({
       const uniqueOptions = isRemoving
         ? {}
         : uniqueOptionToSelect(
-            possibleItems,
-            newSelectedVariation,
-            isMainAndImpossible
-          )
+          possibleItems,
+          newSelectedVariation,
+          isMainAndImpossible
+        )
 
       const finalSelected = {
         ...newSelectedVariation,

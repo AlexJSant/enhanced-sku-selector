@@ -4,7 +4,7 @@ import { ResponsiveValuesTypes } from 'vtex.responsive-values'
 
 import styles from '../styles.css'
 import {
-  isColor,
+  // isColor,
   getValidMarginBottom,
   findItemWithSelectedVariations,
   findListItemsWithSelectedVariations,
@@ -34,15 +34,32 @@ export type ShowVariationsLabels =
   | 'itemValue'
   | 'variationAndItemValue'
 
+// function getShowValueForVariation(
+//   showValueForVariation: ShowValueForVariation,
+//   variationName: string
+// ) {
+//   const isImage = isColor(variationName)
+
+//   return (
+//     showValueForVariation === 'all' ||
+//     (showValueForVariation === 'image' && isImage)
+//   )
+// }
+
 function getShowValueForVariation(
   showValueForVariation: ShowValueForVariation,
-  variationName: string
+  variationName: string,
+  imagesMap: ImageMap
 ) {
-  const isImage = isColor(variationName)
+  // Check if this variation has any images
+  const variationImages = imagesMap?.[variationName]
+  const hasImages = variationImages
+    ? Object.values(variationImages).some(img => img !== undefined)
+    : false
 
   return (
     showValueForVariation === 'all' ||
-    (showValueForVariation === 'image' && isImage)
+    (showValueForVariation === 'image' && hasImages)
   )
 }
 
@@ -183,75 +200,75 @@ const parseOptionNameToDisplayOption =
     hideImpossibleCombinations: boolean
     disableUnavailableSelectOptions: boolean
   }) =>
-  (variationValue: {
-    name: string
-    originalName: string
-  }): DisplayOption | null => {
-    const isSelected = selectedVariations[variationName] === variationValue.name
-    const image = imagesMap?.[variationName]?.[variationValue.name]
+    (variationValue: {
+      name: string
+      originalName: string
+    }): DisplayOption | null => {
+      const isSelected = selectedVariations[variationName] === variationValue.name
+      const image = imagesMap?.[variationName]?.[variationValue.name]
 
-    const newSelectedVariation = clone(selectedVariations)
+      const newSelectedVariation = clone(selectedVariations)
 
-    newSelectedVariation[variationName] = isSelected
-      ? null
-      : variationValue.name
+      newSelectedVariation[variationName] = isSelected
+        ? null
+        : variationValue.name
 
-    const possibleItems = findListItemsWithSelectedVariations(
-      skuItems,
-      newSelectedVariation
-    )
+      const possibleItems = findListItemsWithSelectedVariations(
+        skuItems,
+        newSelectedVariation
+      )
 
-    if (possibleItems.length > 0) {
-      // This is a valid combination option
+      if (possibleItems.length > 0) {
+        // This is a valid combination option
 
-      const possibleItemsOrderedByAvailability =
-        possibleItems.length > 1
-          ? possibleItems.sort(orderItemsByAvailability)
-          : possibleItems
+        const possibleItemsOrderedByAvailability =
+          possibleItems.length > 1
+            ? possibleItems.sort(orderItemsByAvailability)
+            : possibleItems
 
-      const [item] = possibleItemsOrderedByAvailability
+        const [item] = possibleItemsOrderedByAvailability
 
-      const callbackFn = onSelectItemMemo({
-        name: variationName,
-        value: variationValue.name,
-        skuId: item.itemId,
-        isMainAndImpossible: false,
-        possibleItems: possibleItemsOrderedByAvailability,
-      })
-
-      return {
-        label: variationValue.name,
-        originalName: variationValue.originalName,
-        onSelectItem: callbackFn,
-        image,
-        available: showItemAsAvailable({
+        const callbackFn = onSelectItemMemo({
+          name: variationName,
+          value: variationValue.name,
+          skuId: item.itemId,
+          isMainAndImpossible: false,
           possibleItems: possibleItemsOrderedByAvailability,
-          selectedVariations,
-          variationCount,
-          isSelected,
-        }),
-        impossible: false,
-        disabled: disableUnavailableSelectOptions,
-      }
-    }
+        })
 
-    if (!hideImpossibleCombinations) {
-      // This is a impossible combination and will only appear if the prop allows.
-      return {
-        label: variationValue.name,
-        originalName: variationValue.originalName,
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        onSelectItem: () => {},
-        image,
-        available: true,
-        impossible: true,
-        disabled: disableUnavailableSelectOptions,
+        return {
+          label: variationValue.name,
+          originalName: variationValue.originalName,
+          onSelectItem: callbackFn,
+          image,
+          available: showItemAsAvailable({
+            possibleItems: possibleItemsOrderedByAvailability,
+            selectedVariations,
+            variationCount,
+            isSelected,
+          }),
+          impossible: false,
+          disabled: disableUnavailableSelectOptions,
+        }
       }
-    }
 
-    // This is a impossible combination and will be hidden.
-    return null
-  }
+      if (!hideImpossibleCombinations) {
+        // This is a impossible combination and will only appear if the prop allows.
+        return {
+          label: variationValue.name,
+          originalName: variationValue.originalName,
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          onSelectItem: () => { },
+          image,
+          available: true,
+          impossible: true,
+          disabled: disableUnavailableSelectOptions,
+        }
+      }
+
+      // This is a impossible combination and will be hidden.
+      return null
+    }
 
 const variationNameToDisplayVariation =
   ({
@@ -275,38 +292,38 @@ const variationNameToDisplayVariation =
     disableUnavailableSelectOptions: boolean
     sortVariationsByLabel: boolean
   }) =>
-  (variationName: string): DisplayVariation => {
-    const name = variationName
-    const { values, originalName } = variations[variationName]
-    let options = values
-      .map(
-        parseOptionNameToDisplayOption({
-          selectedVariations,
-          variationName,
-          skuItems,
-          onSelectItemMemo,
-          imagesMap,
-          variationCount,
-          hideImpossibleCombinations,
-          disableUnavailableSelectOptions,
-        })
-      )
-      .filter(Boolean) as DisplayOption[]
+    (variationName: string): DisplayVariation => {
+      const name = variationName
+      const { values, originalName } = variations[variationName]
+      let options = values
+        .map(
+          parseOptionNameToDisplayOption({
+            selectedVariations,
+            variationName,
+            skuItems,
+            onSelectItemMemo,
+            imagesMap,
+            variationCount,
+            hideImpossibleCombinations,
+            disableUnavailableSelectOptions,
+          })
+        )
+        .filter(Boolean) as DisplayOption[]
 
-    if (sortVariationsByLabel) {
-      const areAllNumbers = options.every(
-        (option: DisplayOption) => !Number.isNaN(Number(option.label))
-      )
+      if (sortVariationsByLabel) {
+        const areAllNumbers = options.every(
+          (option: DisplayOption) => !Number.isNaN(Number(option.label))
+        )
 
-      const sortedOptions = areAllNumbers
-        ? sortOptionsNumerically([...options])
-        : sortOptionsAlphabetically([...options])
+        const sortedOptions = areAllNumbers
+          ? sortOptionsNumerically([...options])
+          : sortOptionsAlphabetically([...options])
 
-      options = [...sortedOptions]
+        options = [...sortedOptions]
+      }
+
+      return { name, originalName, options }
     }
-
-    return { name, originalName, options }
-  }
 
 // Parameters are explained on PropTypes
 const getAvailableVariations = ({
@@ -376,12 +393,12 @@ function SKUSelector({
   const variationsSpacing = getValidMarginBottom(marginBottomProp)
   const onSelectItemMemo = useCallback(
     ({
-        name,
-        value,
-        skuId,
-        isMainAndImpossible,
-        possibleItems,
-      }: CallbackItem) =>
+      name,
+      value,
+      skuId,
+      isMainAndImpossible,
+      possibleItems,
+    }: CallbackItem) =>
       () =>
         onSelectItem({
           name,
@@ -458,9 +475,14 @@ function SKUSelector({
             containerClasses={variationClasses}
             key={`${variationOption.name}-${index}`}
             showErrorMessage={showVariationsErrorMessage}
+            // showValueForVariation={getShowValueForVariation(
+            //   showValueForVariation,
+            //   variationOption.name
+            // )}
             showValueForVariation={getShowValueForVariation(
               showValueForVariation,
-              variationOption.name
+              variationOption.name,
+              imagesMap
             )}
             sliderDisplayThreshold={sliderDisplayThreshold}
             sliderArrowSize={sliderArrowSize}
