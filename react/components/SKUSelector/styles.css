@@ -13,6 +13,8 @@
 }
 .skuSelectorSelectorImageValue {
 }
+.skuSelectorSelectedValue {
+}
 .skuSelectorTextContainer {
 }
 
@@ -71,4 +73,24 @@
 }
 
 .skuSelectorOptionsList {
+}
+
+/* Image Popper Styles */
+.imagePopper {
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.imagePopperContent {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.imagePopperLabel {
+  font-size: 0.875rem;
+  color: #333;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 0.5rem;
 }

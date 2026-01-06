@@ -4,6 +4,7 @@ import { FormattedNumber } from 'react-intl'
 
 import { useSKUSelectorCssHandles } from '../SKUSelectorCssHandles'
 import { slug, changeImageUrlSize } from '../utils'
+import ImagePopper from './ImagePopper'
 
 interface Props {
   isAvailable: boolean
@@ -16,12 +17,15 @@ interface Props {
   variationValueOriginalName: string
   imageUrl?: string
   imageLabel?: string | null
+  originalImageUrl?: string
   isImpossible: boolean
   imageHeight?: number | string
   imageWidth?: number | string
   showBorders?: boolean
   variationLabel: string
   label: string
+  showImagePopper?: boolean
+  popperImageSize?: number
 }
 
 const getDiscount = (maxPrice?: number | null, price?: number | null) => {
@@ -61,12 +65,15 @@ function SelectorItem({
   variationValueOriginalName,
   imageUrl,
   imageLabel,
+  originalImageUrl,
   isImpossible,
   imageHeight,
   imageWidth,
   showBorders = true,
   variationLabel,
   label,
+  showImagePopper = true,
+  popperImageSize = 400,
 }: Props) {
   const discount = getDiscount(maxPrice, price)
   const { handles, withModifiers } = useSKUSelectorCssHandles()
@@ -122,7 +129,7 @@ function SelectorItem({
     itemTextValue = `${label} ${variationValue}`
   }
 
-  return (
+  const itemContent = (
     <div
       role="button"
       tabIndex={0}
@@ -183,6 +190,44 @@ function SelectorItem({
       )}
     </div>
   )
+
+  // Render with popper if image is available and popper is enabled
+  const shouldShowPopper = 
+    isImage &&
+    originalImageUrl &&
+    showImagePopper &&
+    !isImpossible &&
+    isAvailable
+
+  // Debug: verificar condições
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    if (isImage) {
+      console.log('ImagePopper condições:', {
+        isImage,
+        hasOriginalImageUrl: !!originalImageUrl,
+        originalImageUrl,
+        showImagePopper,
+        isImpossible,
+        isAvailable,
+        shouldShowPopper,
+      })
+    }
+  }
+
+  if (shouldShowPopper && originalImageUrl) {
+    return (
+      <ImagePopper
+        imageUrl={originalImageUrl}
+        imageLabel={imageLabel}
+        popperImageSize={popperImageSize}
+        variationValue={variationValueOriginalName}
+      >
+        {itemContent}
+      </ImagePopper>
+    )
+  }
+
+  return itemContent
 }
 
 export default memo(SelectorItem)

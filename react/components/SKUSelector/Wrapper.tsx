@@ -11,6 +11,7 @@ import type { CssHandlesTypes } from 'vtex.css-handles'
 import SKUSelector from './index'
 import { CSS_HANDLES as SelectorItemCssHandles } from './components/SelectorItem'
 import { CSS_HANDLES as ErrorMessageCssHandles } from './components/ErrorMessage'
+import { CSS_HANDLES as ImagePopperCssHandles } from './components/ImagePopper'
 import { Variations, InitialSelectionType, DisplayMode } from './types'
 import {
   ShowValueForVariation,
@@ -23,6 +24,7 @@ export const SKU_SELECTOR_CSS_HANDLES = [
   ...ErrorMessageCssHandles,
   ...SelectorItemCssHandles,
   ...SKUSelectorCssHandles,
+  ...ImagePopperCssHandles,
 ] as const
 
 const getVariationsFromItems = (
@@ -170,6 +172,8 @@ interface Props {
   sliderArrowSize?: number
   sliderItemsPerPage?: ResponsiveValuesTypes.ResponsiveValue<number>
   sortVariationsByLabel?: boolean
+  showImagePopper?: boolean
+  popperImageSize?: number
   /** Used to override default CSS handles */
   classes?: CssHandlesTypes.CustomClasses<typeof SKU_SELECTOR_CSS_HANDLES>
 }
@@ -262,6 +266,8 @@ function SKUSelectorWrapper(props: Props) {
         sliderArrowSize={props.sliderArrowSize}
         sliderDisplayThreshold={props.sliderDisplayThreshold}
         sortVariationsByLabel={props.sortVariationsByLabel}
+        showImagePopper={props.showImagePopper}
+        popperImageSize={props.popperImageSize}
       />
     </SKUSelectorCssHandlesProvider>
   )

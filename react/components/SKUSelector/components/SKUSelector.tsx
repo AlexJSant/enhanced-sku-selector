@@ -85,6 +85,8 @@ interface Props {
   sliderArrowSize: number
   sliderItemsPerPage: ResponsiveValuesTypes.ResponsiveValue<number>
   sortVariationsByLabel?: boolean
+  showImagePopper?: boolean
+  popperImageSize?: number
 }
 
 function isSkuAvailable(item?: SelectorProductItem) {
@@ -388,6 +390,8 @@ function SKUSelector({
   sliderArrowSize,
   sliderItemsPerPage,
   sortVariationsByLabel = false,
+  showImagePopper,
+  popperImageSize,
 }: Props) {
   const { handles } = useSKUSelectorCssHandles()
   const variationsSpacing = getValidMarginBottom(marginBottomProp)
@@ -487,6 +491,8 @@ function SKUSelector({
             sliderDisplayThreshold={sliderDisplayThreshold}
             sliderArrowSize={sliderArrowSize}
             sliderItemsPerPage={sliderItemsPerPage}
+            showImagePopper={showImagePopper}
+            popperImageSize={popperImageSize}
           />
         )
       })}

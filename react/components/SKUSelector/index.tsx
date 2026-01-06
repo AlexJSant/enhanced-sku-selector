@@ -260,6 +260,8 @@ interface Props {
   sliderArrowSize?: number
   sliderItemsPerPage?: ResponsiveValuesTypes.ResponsiveValue<number>
   sortVariationsByLabel?: boolean
+  showImagePopper?: boolean
+  popperImageSize?: number
 }
 
 const getNewSelectedVariations = (
@@ -327,6 +329,8 @@ const SKUSelectorContainer: FC<Props> = ({
     tablet: 2,
     phone: 1,
   },
+  showImagePopper,
+  popperImageSize,
 }) => {
   const productContext = useProduct()
   const selectedItem = productContext?.selectedItem
@@ -498,6 +502,8 @@ const SKUSelectorContainer: FC<Props> = ({
       sliderArrowSize={sliderArrowSize}
       sliderItemsPerPage={sliderItemsPerPage}
       sortVariationsByLabel={sortVariationsByLabel}
+      showImagePopper={showImagePopper}
+      popperImageSize={popperImageSize}
     />
   )
 }

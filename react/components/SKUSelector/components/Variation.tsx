@@ -35,6 +35,8 @@ interface Props {
   sliderDisplayThreshold: number
   sliderArrowSize: number
   sliderItemsPerPage: ResponsiveValuesTypes.ResponsiveValue<number>
+  showImagePopper?: boolean
+  popperImageSize?: number
 }
 
 const ITEMS_VISIBLE_THRESHOLD = 2
@@ -62,6 +64,8 @@ const Variation: FC<Props> = ({
   sliderArrowSize,
   sliderDisplayThreshold,
   sliderItemsPerPage,
+  showImagePopper,
+  popperImageSize,
 }) => {
   const { originalName, name, options } = variation
 
@@ -123,6 +127,12 @@ const Variation: FC<Props> = ({
   const showVariationLabelName =
     variationLabel === 'variation' || variationLabel === 'variationAndItemValue'
 
+  // Find the originalName of the selected item
+  const selectedOption = selectedItem
+    ? options.find(option => option.label === selectedItem)
+    : null
+  const selectedOriginalName = selectedOption?.originalName
+
   const selectorItemsArray = displayOptions.map(option => {
     return (
       <SelectorItem
@@ -141,10 +151,15 @@ const Variation: FC<Props> = ({
           option.image &&
           imageUrlForSize(stripUrl(option.image.imageUrl), VARIATION_IMG_SIZE)
         }
+        originalImageUrl={
+          option.image ? stripUrl(option.image.imageUrl) : undefined
+        }
         imageLabel={option.image?.imageLabel}
         isImpossible={option.impossible}
         variationLabel={variationLabel}
         label={name}
+        showImagePopper={showImagePopper}
+        popperImageSize={popperImageSize}
       />
     )
   })
@@ -158,6 +173,12 @@ const Variation: FC<Props> = ({
               className={`${styles.skuSelectorName} c-muted-1 t-small overflow-hidden`}
             >
               {name}
+              {selectedOriginalName && (
+                <span className={`${styles.skuSelectorSelectedValue} c-muted-1 t-small`}>
+                  {' - '}
+                  {selectedOriginalName}
+                </span>
+              )}
               {showErrorMessage && buyButton.clicked && !selectedItem && (
                 <ErrorMessage />
               )}
