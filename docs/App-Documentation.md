@@ -230,6 +230,88 @@ A solução suporta palavras-chave de cor em **17+ idiomas**:
 - Treinar equipe de catalog sobre a nova funcionalidade
 - Monitorar performance e feedback de usuários
 
+## 🆕 Novas Funcionalidades Implementadas
+
+### Image Popper (Desktop - Mouseover)
+
+**Componente:** `ImagePopper.tsx`
+
+**Funcionalidade:**
+- Exibe um popper (tooltip) com imagem ampliada ao passar o mouse sobre os thumbnails do SKU Selector
+- A imagem exibida é a mesma do thumbnail, mas em tamanho maior (configurável)
+- Mostra o nome do acabamento abaixo da imagem no popper
+- Aparece apenas em desktop (não aparece em mobile, max-width: 1024px)
+
+**Props relacionadas:**
+- `showImagePopper?: boolean` - Ativa/desativa o popper (padrão: `false`)
+- `popperImageSize?: number` - Tamanho da imagem no popper em pixels (padrão: `400`)
+
+**CSS Handles disponíveis:**
+- `imagePopper` - Container principal do popper
+- `imagePopperContent` - Conteúdo interno (imagem + label)
+- `imagePopperLabel` - Label do acabamento abaixo da imagem
+- `imagePopperImage` - Imagem dentro do popper (via seletor descendente)
+
+**Exemplo de uso:**
+```json
+{
+  "enhanced-sku-selector": {
+    "props": {
+      "showImagePopper": true,
+      "popperImageSize": 500
+    }
+  }
+}
+```
+
+### Image Modal (Mobile)
+
+**Componente:** `ImageModal.tsx`
+
+**Funcionalidade:**
+- Exibe um modal com imagem completa em tela cheia no mobile
+- Aparece quando o usuário clica no botão "ver detalhe" ao lado do nome do acabamento selecionado
+- Funciona apenas em dispositivos mobile (max-width: 1024px)
+- Pode ser fechado via botão X, tecla ESC ou clicando no overlay
+- Bloqueia o scroll do body quando aberto
+
+**Comportamento:**
+- No mobile, quando um acabamento com imagem é selecionado, aparece um botão "ver detalhe" ao lado do nome da especificação
+- Ao clicar, abre o modal com a imagem completa e o nome do acabamento
+
+**CSS Handles disponíveis:**
+- `imageModal` - Container principal do modal
+- `imageModalOverlay` - Overlay/fundo escuro
+- `imageModalContent` - Conteúdo do modal (card branco)
+- `imageModalCloseButton` - Botão de fechar (×)
+- `imageModalImage` - Imagem dentro do modal
+- `imageModalLabel` - Label do acabamento no modal
+
+### Exibição do Nome do Acabamento
+
+**Funcionalidade:**
+- O nome do acabamento selecionado é exibido ao lado do nome da especificação com um hífen
+- Exemplo: "Madeira - Maciça" → "Madeira - Maciça - Pinho" (quando "Pinho" é selecionado)
+- Aparece tanto no desktop quanto no mobile
+
+**CSS Handle:**
+- `skuSelectorSelectedValue` - Estilização do nome do acabamento selecionado
+
+### Hook useIsMobile
+
+**Arquivo:** `react/hooks/useIsMobile.ts`
+
+**Funcionalidade:**
+- Hook React para detectar se o viewport atual é mobile
+- Detecta baseado em max-width (padrão: 1024px)
+- Atualiza automaticamente ao redimensionar a janela
+- Compatível com SSR (Server-Side Rendering)
+
+**Uso:**
+```typescript
+const isMobile = useIsMobile(1024) // max-width: 1024px
+```
+
 ## 📚 Documentação Relacionada
 
 - [SKU Selector Main Docs](docs/SKUSelector.md)
@@ -243,6 +325,9 @@ A solução suporta palavras-chave de cor em **17+ idiomas**:
 2. ✅ `docs/SKUSelector.md` - Documentação atualizada
 3. ✅ `docs/SKUSelector-MultipleColorVariations.md` - Novo guia
 4. ✅ `react/__tests__/utils/isColor.test.ts` - Testes
+5. ✅ `react/components/SKUSelector/components/ImagePopper.tsx` - Popper desktop
+6. ✅ `react/components/SKUSelector/components/ImageModal.tsx` - Modal mobile
+7. ✅ `react/hooks/useIsMobile.ts` - Hook de detecção mobile
 
 **Checklist de Qualidade:**
 - ✅ Testes unitários passando (22/22)
@@ -251,10 +336,13 @@ A solução suporta palavras-chave de cor em **17+ idiomas**:
 - ✅ Exemplos práticos incluídos
 - ✅ Suporte multilíngue
 - ✅ Edge cases tratados
+- ✅ Funcionalidades desktop e mobile implementadas
+- ✅ CSS handles para customização
 
 ---
 
 **Data de Implementação:** 2025-11-07  
+**Última Atualização:** 2025-01-XX (Image Popper e Modal)  
 **Status:** ✅ Completo e Testado  
 **Breaking Changes:** ❌ Nenhum
 

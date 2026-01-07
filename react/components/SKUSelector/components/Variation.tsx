@@ -17,6 +17,8 @@ import ErrorMessage from './ErrorMessage'
 import SelectModeVariation from './SelectVariationMode'
 import SelectorItem from './SelectorItem'
 import { ShowVariationsLabels } from './SKUSelector'
+import ImageModal from './ImageModal'
+import { useIsMobile } from '../../../hooks/useIsMobile'
 
 interface Props {
   variation: DisplayVariation
@@ -133,6 +135,17 @@ const Variation: FC<Props> = ({
     : null
   const selectedOriginalName = selectedOption?.originalName
 
+  // Mobile detection (max-width: 1024px)
+  const isMobile = useIsMobile(1024)
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // Get selected option image URL for modal
+  const selectedImageUrl = selectedOption?.image
+    ? stripUrl(selectedOption.image.imageUrl)
+    : null
+
   const selectorItemsArray = displayOptions.map(option => {
     return (
       <SelectorItem
@@ -179,6 +192,23 @@ const Variation: FC<Props> = ({
                   {selectedOriginalName}
                 </span>
               )}
+              {/* Mobile: "ver detalhe" button when item is selected and has image */}
+              {isMobile &&
+                selectedOriginalName &&
+                selectedImageUrl &&
+                selectedOption?.image && (
+                  <button
+                    type="button"
+                    onClick={e => {
+                      e.stopPropagation()
+                      setIsModalOpen(true)
+                    }}
+                    className={`${styles.skuSelectorViewDetailButton} c-link t-small ml2 bn bg-transparent pointer`}
+                    style={{ textDecoration: 'underline' }}
+                  >
+                    <i className={`bi bi-zoom-in`}></i> Ver detalhes
+                  </button>
+                )}
               {showErrorMessage && buyButton.clicked && !selectedItem && (
                 <ErrorMessage />
               )}
@@ -232,6 +262,17 @@ const Variation: FC<Props> = ({
           )}
         </div>
       </div>
+
+      {/* Image Modal for Mobile */}
+      {isMobile && selectedImageUrl && selectedOption?.image && (
+        <ImageModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          imageUrl={selectedImageUrl}
+          imageLabel={selectedOption.image.imageLabel}
+          variationValue={selectedOriginalName || undefined}
+        />
+      )}
     </div>
   )
 }

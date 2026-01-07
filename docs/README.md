@@ -14,6 +14,9 @@ The **Enhanced SKU Selector** is a powerful VTEX IO app that provides an advance
 - ✅ Support for composite color variations (e.g., "Top Color", "Base Color", "Color of the Top")
 - ✅ Visual thumbnails for color variations in 17+ languages
 - ✅ Automatic image filtering based on `imageLabel` matching between Catalog specifications and image labels
+- ✅ **Image Popper** - Hover tooltip with enlarged image on desktop
+- ✅ **Image Modal** - Full-screen image modal on mobile devices
+- ✅ **Selected variation name display** - Shows selected acabamento name next to specification
 - ✅ 100% backward compatible with existing implementations
 - ✅ Responsive design with customizable image dimensions
 
@@ -86,6 +89,8 @@ The app exports the following block:
 | `sliderItemsPerPage`             | `number` \| `object`                                                    | Number of items per page in slider mode. Can be responsive with `desktop` and `mobile` keys                                                    | `5`           |
 | `sortVariationsByLabel`          | `boolean`                                                               | Sorts variation options alphabetically by label                                                                                                 | `false`       |
 | `visibility`                     | `enum` (`'always'`, `'more-than-one'`)                                 | Controls when the selector is visible. `'always'`: always show, `'more-than-one'`: only when there's more than one SKU                            | `'always'`    |
+| `showImagePopper`                | `boolean`                                                               | Enables image popper (tooltip) on hover for desktop. Shows enlarged image when hovering over thumbnails                                         | `false`       |
+| `popperImageSize`                | `number`                                                                | Size of the image displayed in the popper in pixels. Only applies when `showImagePopper` is `true`                                              | `400`         |
 
 #### `imageHeight` and `imageWidth` object:
 
@@ -222,9 +227,31 @@ The Enhanced SKU Selector provides the following CSS handles for customization:
 | `skuSelectorItem`              | Individual selector item                                         |
 | `skuSelectorItemImage`         | Selector item when displaying an image                          |
 | `skuSelectorItemImageValue`    | Image element within a selector item                             |
-| `skuSelectorItemTextValue`     | Text value within a selector item                                |
+| `skuSelectorItemTextValue`    | Text value within a selector item                                |
+| `skuSelectorSelectedValue`     | Selected variation value name displayed next to specification    |
+| `skuSelectorViewDetailButton`  | "Ver detalhe" button shown on mobile next to selected variation  |
 | `unavailable`                  | Style for unavailable items                                      |
 | `valueWrapper`                 | Wrapper container for variation values                          |
+
+#### Image Popper CSS Handles (Desktop)
+
+| CSS Handles                    | Description                                                      |
+| ------------------------------ | ---------------------------------------------------------------- |
+| `imagePopper`                  | Main container for the image popper (tooltip)                    |
+| `imagePopperContent`          | Content wrapper inside the popper (image + label)               |
+| `imagePopperLabel`             | Label showing the acabamento name below the image                |
+| `imagePopperImage`             | Image element inside the popper (use `.imagePopperContent img` as fallback) |
+
+#### Image Modal CSS Handles (Mobile)
+
+| CSS Handles                    | Description                                                      |
+| ------------------------------ | ---------------------------------------------------------------- |
+| `imageModal`                   | Main container for the image modal                               |
+| `imageModalOverlay`            | Dark overlay background behind the modal                         |
+| `imageModalContent`            | Modal content container (white card)                             |
+| `imageModalCloseButton`        | Close button (×) in the top-right corner                        |
+| `imageModalImage`              | Image element displayed in the modal                             |
+| `imageModalLabel`              | Label showing the acabamento name below the image in modal       |
 
 ### CSS Handles with Modifiers
 
@@ -257,7 +284,107 @@ Some CSS handles support modifiers for more specific styling:
 .skuSelectorItemImage:hover {
   transform: scale(1.05);
 }
+
+/* Customize Image Popper (Desktop) */
+.imagePopper {
+  padding: 1.5rem !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+}
+
+.imagePopperContent img {
+  border-radius: 8px !important;
+  border: 2px solid #134cd8 !important;
+}
+
+.imagePopperLabel {
+  font-size: 1rem !important;
+  color: #134cd8 !important;
+  font-weight: 600 !important;
+}
+
+/* Customize Image Modal (Mobile) */
+.imageModalOverlay {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.imageModalContent {
+  border-radius: 16px !important;
+  padding: 2rem !important;
+}
+
+.imageModalImage {
+  border-radius: 8px !important;
+  border: 3px solid #134cd8 !important;
+}
+
+.imageModalCloseButton {
+  color: #134cd8 !important;
+  font-size: 2.5rem !important;
+}
+
+/* Customize "ver detalhe" button (Mobile) */
+.skuSelectorViewDetailButton {
+  color: #134cd8 !important;
+  font-weight: 500 !important;
+}
+
+/* Customize selected variation name */
+.skuSelectorSelectedValue {
+  color: #134cd8 !important;
+  font-weight: 500 !important;
+}
 ```
+
+## Image Popper and Modal Features
+
+### Image Popper (Desktop)
+
+The Image Popper feature displays an enlarged image when hovering over SKU selector thumbnails on desktop devices. This provides users with a better view of the product variation without leaving the page.
+
+**How to enable:**
+```json
+{
+  "enhanced-sku-selector": {
+    "props": {
+      "showImagePopper": true,
+      "popperImageSize": 500
+    }
+  }
+}
+```
+
+**Features:**
+- Appears on mouse hover over thumbnails
+- Shows the same image as the thumbnail but larger
+- Displays the acabamento name below the image
+- Automatically hidden on mobile devices (max-width: 1024px)
+- Configurable image size via `popperImageSize` prop
+- Smooth fade-in/fade-out animations
+
+### Image Modal (Mobile)
+
+The Image Modal feature provides a full-screen view of product variation images on mobile devices. When a variation is selected, a "ver detalhe" (view detail) button appears next to the specification name, which opens a modal with the full image.
+
+**How it works:**
+1. User selects a variation with an image on mobile (max-width: 1024px)
+2. A "ver detalhe" button appears next to the specification name
+3. Clicking the button opens a modal with the full-size image
+4. Modal can be closed via:
+   - Close button (×) in the top-right corner
+   - ESC key
+   - Clicking the overlay background
+
+**Features:**
+- Full-screen image display
+- Shows acabamento name below the image
+- Prevents body scroll when open
+- Keyboard accessible (ESC to close)
+- Touch-friendly close button
+- Smooth animations
+
+**CSS Customization:**
+All modal elements can be customized using the CSS handles listed above. The modal is fully responsive and adapts to different screen sizes.
 
 <!-- DOCS-IGNORE:start -->
 

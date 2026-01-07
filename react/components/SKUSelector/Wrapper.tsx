@@ -12,6 +12,7 @@ import SKUSelector from './index'
 import { CSS_HANDLES as SelectorItemCssHandles } from './components/SelectorItem'
 import { CSS_HANDLES as ErrorMessageCssHandles } from './components/ErrorMessage'
 import { CSS_HANDLES as ImagePopperCssHandles } from './components/ImagePopper'
+import { CSS_HANDLES as ImageModalCssHandles } from './components/ImageModal'
 import { Variations, InitialSelectionType, DisplayMode } from './types'
 import {
   ShowValueForVariation,
@@ -25,6 +26,7 @@ export const SKU_SELECTOR_CSS_HANDLES = [
   ...SelectorItemCssHandles,
   ...SKUSelectorCssHandles,
   ...ImagePopperCssHandles,
+  ...ImageModalCssHandles,
 ] as const
 
 const getVariationsFromItems = (
@@ -131,13 +133,13 @@ const useVariations = ({
 
     return isSkuSpecificationsEmpty
       ? getVariationsFromItems(
-          variationsSource as ProductItem[],
-          formattedVisibleVariations
-        )
+        variationsSource as ProductItem[],
+        formattedVisibleVariations
+      )
       : getVariationsFromSpecifications(
-          variationsSource as SkuSpecification[],
-          formattedVisibleVariations
-        )
+        variationsSource as SkuSpecification[],
+        formattedVisibleVariations
+      )
   }, [
     variationsSource,
     shouldNotShow,
